@@ -27,7 +27,7 @@ $("#add-train-btn").on("click", function(event) {
      // Grabs user input
   var trainName = $("#train-name-input").val().trim();
   var destination = $("#destination-input").val().trim();
-  var time = moment($("#time-input").val().trim(), "HH:mm").format("LT");
+  var time = moment($("#time-input").val().trim(), "HH:mm").format("X");
   var frequency = $("#frequency-input").val().trim();
 
   // Creates local "temporary" object for holding train data
@@ -49,9 +49,50 @@ $("#add-train-btn").on("click", function(event) {
 
   alert("Train successfully added");
 
-  // Clears all of the text-boxes
+  // Clears the text-boxes for next input
   $("#train-name-input").val("");
   $("#destination-input").val("");
   $("#time-input").val("");
   $("#frequency-input").val("");
 });
+
+// 3. Create Firebase event for adding the newTrain to the database and a row in the html when a user adds an entry
+database.ref().on("child_added", function(childSnapshot) {
+    console.log(childSnapshot.val());
+  
+    // Store everything into a variable.
+    var trainName = childSnapshot.val().name;
+    var destination = childSnapshot.val().destination;
+    var time = childSnapshot.val().time;
+    var frequency = childSnapshot.val().frequency;
+  
+    // Employee Info
+    console.log(trainName);
+    console.log(destination);
+    console.log(time);
+    console.log(frequency);
+  
+    // Format the train time
+    var trainTime= moment().format("HH:mm");
+  
+     //Difference between train time and frequency
+    // 
+        var trainDiff = moment().diff(moment(trainTime, "X"), "minutes");
+        console.log(trainDiff);
+  
+    // Calculate the next arrival using
+  
+    // Create the new row
+        var newRow = $("<tr>").append(
+        $("<td>").text(trainName),
+        $("<td>").text(destination),
+        $("<td>").text(time),
+        $("<td>").text(frequency),
+        $("<td>").text(trainDiff),
+     
+    );
+  
+    // Append the new row to the table
+    $("#train-table > tbody").append(newRow);
+  });
+  
